@@ -1,4 +1,4 @@
-import {EItem} from "@modules/item/models/item.entity";
+import {EItem} from "@config/db/entities/item.entity";
 
 export interface ItemErrorResponse {
     id: number;

@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {  Repository } from 'typeorm';
-import { EItem } from "./models/item.entity";
+import {ILike, Repository} from 'typeorm';
+import { EItem } from "@config/db/entities/item.entity";
 import {ItemErrorResponse, ItemFindResponse} from "@modules/item/typings";
 
 @Injectable()
 export class ItemService {
     constructor(
         @InjectRepository(EItem)
-        private repository: Repository<EItem>,
+        private repository: Repository<EItem>
     ) {}
 
     public async getItems(page: number, itemsPerPage: number, sort?: { [key in 'price' | 'name']: 'ASC' | 'DESC' }, searchName?: string): Promise<ItemFindResponse> {
         try {
             const [items, total] = await this.repository.findAndCount({
-                where: searchName ? { name: searchName } : {},
+                where: searchName ? { name: ILike(`%${searchName}%`) } : {},
                 skip: (page - 1) * itemsPerPage,
                 take: itemsPerPage,
                 order: sort ?? {}
@@ -27,8 +27,14 @@ export class ItemService {
         }
     }
 
-    public async createItem(name: string, price?: number): Promise<EItem> {
+    public async createItem(name: string, price?: number): Promise<EItem | ItemErrorResponse> {
         const item = new EItem();
+
+        const candidate = await this.repository.findOne({ where: { name } });
+
+        if (candidate) {
+            return { message: 'Товар с таким именем уже существует', id: candidate.id }
+        }
 
         item.name = name;
         item.price = price;

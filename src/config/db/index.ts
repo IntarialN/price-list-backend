@@ -1,8 +1,7 @@
 import { TypeOrmModuleOptions } from "@nestjs/typeorm/dist/interfaces/typeorm-options.interface";
 import { resolve } from 'path';
-import dotenv from 'dotenv';
-
-const { config } = dotenv;
+import { config } from 'dotenv';
+import entities from "./entities";
 
 config({ path: resolve(process.cwd(), '.env') });
 
@@ -15,5 +14,6 @@ export const DBConfig: TypeOrmModuleOptions = {
     database: process.env.POSTGRES_DB || '',
     synchronize: true,
     logging: false,
-    entities: [__dirname + '../../modules/*entity.ts']
+    entities: entities,
+    migrations: ["migrations/*.ts"]
 }
