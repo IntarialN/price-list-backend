@@ -60,6 +60,12 @@ export class ItemService {
                 return { id, message: 'Для изменения нужно указать либо новую цену, либо новое имя' };
             }
 
+            const candidate = await this.repository.findOne({ where: { name } });
+
+            if (candidate) {
+                return { message: 'Товар с таким именем уже существует', id: candidate.id }
+            }
+
             item.name = name ?? item.name;
             item.price = price ?? item.price;
 

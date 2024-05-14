@@ -1,6 +1,6 @@
 import {MiddlewareConsumer, Module, NestModule, RequestMethod} from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import {AppController} from './app.controller';
+import {AppService} from './app.service';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {DBConfig} from "@config/db";
 import {ItemModule} from "@modules/item/item.module";
@@ -21,6 +21,14 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
         .apply(AuthMiddleware)
-        .forRoutes({ path: 'items', method: RequestMethod.POST });
+        .exclude(
+            { path: 'users', method: RequestMethod.POST },
+            { path: 'users', method: RequestMethod.GET }
+        )
+        .forRoutes(
+            { path: 'items', method: RequestMethod.POST },
+            { path: 'items/*', method: RequestMethod.PATCH },
+            { path: 'items/*', method: RequestMethod.DELETE }
+        )
   }
 }
