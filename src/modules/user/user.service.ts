@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {EUser} from "@config/db/entities/user.entity";
-import {UserLoginResponse} from "@modules/user/typings";
+import {UserCreateErrorResponse, UserLoginResponse} from "@modules/user/typings";
 
 @Injectable()
 export class UserService {
@@ -15,8 +15,15 @@ export class UserService {
         return this.repository.findOne({ where: {username} });
     }
 
-    async createUser(username: string, password: string): Promise<EUser> {
+    async createUser(username: string, password: string): Promise<UserCreateErrorResponse | EUser> {
         const user = new EUser();
+
+        const candidate = await this.repository.findOne({ where: { username } });
+
+        if (candidate) {
+            return { message: 'Пользователь с таким логином уже существует', id: candidate.id }
+        }
+
         user.username = username;
         user.password = password;
 

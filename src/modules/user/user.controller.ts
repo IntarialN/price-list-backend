@@ -2,7 +2,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import {EUser} from "@config/db/entities/user.entity";
-import {UserLoginResponse} from "@modules/user/typings";
+import {UserCreateErrorResponse, UserLoginResponse} from "@modules/user/typings";
 
 @Controller('users')
 export class UserController {
@@ -12,7 +12,7 @@ export class UserController {
     async registerUser(
         @Body('username') username: string,
         @Body('password') password: string,
-    ): Promise<EUser> {
+    ): Promise<UserCreateErrorResponse | EUser> {
         return this.userService.createUser(username, password);
     }
 
