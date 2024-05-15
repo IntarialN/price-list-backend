@@ -17,7 +17,7 @@ export class ItemService {
                 where: searchName ? { name: ILike(`%${searchName}%`) } : {},
                 skip: (page - 1) * itemsPerPage,
                 take: itemsPerPage,
-                order: sort ?? {}
+                order: sort ?? { id: 'ASC' }
             });
 
             return { items, pages: Math.ceil(total / itemsPerPage) };
